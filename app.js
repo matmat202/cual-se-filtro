@@ -2,8 +2,13 @@
   const C = window.COUNTS, L = window.Leak;
   const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, local
   const pairs = L.dailyPairs(C, today);
-  let i = 0, right = 0;
+  const KEY = "cual-se-filtro", URL = "https://matmat202.github.io/cual-se-filtro/";
   const $ = id => document.getElementById(id);
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  const picks = L.restore(saved, today, pairs);
+  let i = picks.length;
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ date: today, picks })); } catch (e) {} }
 
   function show() {
     const p = pairs[i];
@@ -20,7 +25,7 @@
 
   function pick(w) {
     const p = pairs[i], ok = L.isRight(C, p, w);
-    if (ok) right++;
+    picks.push(w); save();
     const [hi, lo] = C[p[0]] > C[p[1]] ? p : [p[1], p[0]];
     for (const b of $("pair").children) {
       b.disabled = true;
@@ -38,11 +43,25 @@
     $("next").focus();
   }
 
-  $("next").onclick = () => {
-    if (++i < pairs.length) return show();
+  function finish() {
+    const right = picks.filter((w, k) => L.isRight(C, pairs[k], w)).length;
     $("game").hidden = true; $("done").hidden = false;
     $("score").textContent = `${right} de ${pairs.length}`;
-    $("share-line").textContent = `¿Cuál se filtró más? ${today}: ${right}/${pairs.length}. Mañana hay otras diez.`;
+    $("share-line").textContent = L.shareText(C, pairs, picks, today, URL).split("\n")[1] + " · Mañana hay otras diez.";
+  }
+
+  $("next").onclick = () => (++i < pairs.length ? show() : finish());
+
+  $("share").onclick = async () => {
+    const text = L.shareText(C, pairs, picks, today, URL);
+    try {
+      if (navigator.share) return await navigator.share({ text });
+      await navigator.clipboard.writeText(text);
+      $("share-out").textContent = "Copiado. Pégalo en el chat de la familia.";
+    } catch (e) {
+      if (e && e.name === "AbortError") return;
+      $("share-out").textContent = text;
+    }
   };
 
   $("check").onclick = async () => {
@@ -63,5 +82,5 @@
     $("mine").value = "";
   };
 
-  show();
+  if (i >= pairs.length) finish(); else show();
 })();

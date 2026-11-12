@@ -60,6 +60,25 @@
     return 0;
   }
 
-  const api = { GENERIC, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng };
+  // What a reload brings back: today's picks, in order, only while each one is still a
+  // word of its pair. Anything else (another day, a stale data set, junk) starts fresh.
+  function restore(saved, iso, pairs) {
+    if (!saved || saved.date !== iso || !Array.isArray(saved.picks)) return [];
+    const out = [];
+    for (let k = 0; k < saved.picks.length && k < pairs.length; k++) {
+      if (!pairs[k].includes(saved.picks[k])) return [];
+      out.push(saved.picks[k]);
+    }
+    return out;
+  }
+
+  // The message a player sends the family: score, one mark per pair, the link.
+  function shareText(counts, pairs, picks, iso, url) {
+    const marks = picks.map((w, k) => (isRight(counts, pairs[k], w) ? "✅" : "❌"));
+    const right = marks.filter(m => m === "✅").length;
+    return `¿Cuál se filtró más? ${iso}: ${right}/${pairs.length}\n${marks.join("")}\n${url}`;
+  }
+
+  const api = { GENERIC, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);
