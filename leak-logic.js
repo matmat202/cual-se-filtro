@@ -5,6 +5,14 @@
     "111111", "000000", "1234", "2025", "1990"]);
   const MIN_RATIO = 1.25, MAX_RATIO = 10;
 
+  // Words added after launch join the draw only from their date, so a day already
+  // played (and saved on someone's phone) keeps its ten pairs.
+  const DEBUT = {
+    "2026-11-14": "necaxa pachuca xolos tuzos aguilas americanista leon barcelona realmadrid messi chicharito jose juan carlos miguel luis javier ricardo fernando roberto gabriela alejandra adriana veronica patricia rosa carmen maria ximena valeria regina santiago emiliano diego tequiero mibebe bebe novio novia mireina reina hermosa bonita guapo carino mexicano cerveza mezcal chilango guey frijol tortilla mariachi futbol tamal elote churro conejo aguila lobo diostebendiga jehova oaxaca cancun tijuana merida veracruz sinaloa chihuahua jalisco michoacan acapulco chiapas morelia queretaro",
+  };
+  const since = {};
+  for (const [d, ws] of Object.entries(DEBUT)) for (const w of ws.split(" ")) since[w] = d;
+
   function playable(counts, a, b) {
     const x = counts[a], y = counts[b];
     if (!(x > 0 && y > 0) || x === y) return false;
@@ -25,7 +33,7 @@
 
   // Ten pairs, no password used twice in one day.
   function dailyPairs(counts, iso, n = 10) {
-    const words = Object.keys(counts).filter(w => !GENERIC.has(w)).sort();
+    const words = Object.keys(counts).filter(w => !GENERIC.has(w) && !(since[w] > iso)).sort();
     const r = rng(dateSeed(iso));
     const used = new Set(), out = [];
     for (let tries = 0; out.length < n && tries < 5000; tries++) {
@@ -79,6 +87,6 @@
     return `¿Cuál se filtró más? ${iso}: ${right}/${pairs.length}\n${marks.join("")}\n${url}`;
   }
 
-  const api = { GENERIC, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText };
+  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);
