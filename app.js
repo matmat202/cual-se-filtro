@@ -48,6 +48,24 @@
     $("game").hidden = true; $("done").hidden = false;
     $("score").textContent = `${right} de ${pairs.length}`;
     $("share-line").textContent = L.shareText(C, pairs, picks, today, URL).split("\n")[1] + " · Mañana hay otras diez.";
+    $("review").replaceChildren(...L.review(C, pairs, picks).map(r => {
+      const li = document.createElement("li");
+      li.className = r.ok ? "ok-row" : "bad-row";
+      const mark = document.createElement("span");
+      mark.className = "mark"; mark.textContent = r.ok ? "✅" : "❌";
+      mark.setAttribute("aria-label", r.ok ? "acertaste" : "fallaste");
+      const cell = (w, n) => {
+        const d = document.createElement("span");
+        d.className = "w" + (w === r.pick ? " picked" : "");
+        const b = document.createElement("b"); b.textContent = w;
+        const c = document.createElement("span"); c.className = "c"; c.textContent = L.fmt(n);
+        d.append(b, c);
+        return d;
+      };
+      const gt = document.createElement("span"); gt.className = "gt"; gt.textContent = ">";
+      li.append(mark, cell(r.hi, r.hiN), gt, cell(r.lo, r.loN));
+      return li;
+    }));
   }
 
   $("next").onclick = () => (++i < pairs.length ? show() : finish());

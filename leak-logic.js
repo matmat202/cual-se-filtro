@@ -87,6 +87,15 @@
     return `¿Cuál se filtró más? ${iso}: ${right}/${pairs.length}\n${marks.join("")}\n${url}`;
   }
 
-  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText };
+  // The day in review, one row per pair played: the more-leaked word first, both counts,
+  // what the player tapped and whether it was right.
+  function review(counts, pairs, picks) {
+    return picks.map((pick, k) => {
+      const p = pairs[k], [hi, lo] = counts[p[0]] > counts[p[1]] ? p : [p[1], p[0]];
+      return { hi, lo, hiN: counts[hi], loN: counts[lo], pick, ok: pick === hi };
+    });
+  }
+
+  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText, review };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);
