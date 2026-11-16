@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Si hay un nombre, tócalo · ¿Cuál se filtró más?, una historia</title>
+<meta name="description" content="Una historia de ¿Cuál se filtró más?: en un año de partidas, cuando uno de los dos es un nombre de persona, el nombre se filtró más cuatro veces de cada cinco. Dale la etiqueta de «nombre» a 1,000 grupos de palabras al azar y ninguno gana tanto.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="plot" aria-hidden="true"></div>
+<p id="err" role="alert"></p>
+<main>
+
+<section class="step" data-step="words"><div>
+  <p class="kicker">¿Cuál se filtró más? · una historia</p>
+  <h1>Si hay un nombre, tócalo</h1>
+  <p>Estas son las <b data-fact="n_play"></b> contraseñas que salen en el juego, cada una
+  donde cae su número de filtraciones, en filas por tipo: fútbol, amor, ciudades…</p>
+  <p>En rojo, los <b data-fact="n_names"></b> nombres de persona.
+  <span class="w">Casi todos están a la derecha.</span> La mitad de los nombres pasa de
+  <b data-fact="med_name"></b> filtraciones; la mitad de las demás palabras no llega a
+  <b data-fact="med_other"></b>, unas <b data-fact="med_x"></b> veces menos.</p>
+  <p class="small"><span class="k up">nombre</span> <span class="k down">otra palabra</span> · Baja ↓</p>
+</div></section>
+
+<section class="step" data-step="pairs"><div>
+  <p class="kicker">Capítulo 1 · Los pares</p>
+  <h2>Cuatro de cada cinco</h2>
+  <p>El juego saca diez pares al día, los mismos para todos. Saqué los de
+  <b data-fact="days"></b> días seguidos desde el 14 de noviembre de 2026:
+  <b data-fact="n_pairs"></b> pares. En <b data-fact="n_mixed"></b> de ellos, uno es nombre y
+  el otro no.</p>
+  <p>El nombre se filtró más en <b data-fact="won"></b>: el <b data-fact="rate"></b>,
+  <span class="w">cuatro de cada cinco</span>. Sólo <b data-fact="lost"></b> veces ganó la otra.</p>
+  <p>No es un par repetido mil veces: contando cada par distinto una sola vez
+  (<b data-fact="n_uniq"></b>), el nombre gana el <b data-fact="uniq_rate"></b>. Y
+  <span class="w">cada uno de los nombres</span> gana más de la mitad de sus pares; el que
+  menos, el <b data-fact="worst"></b>.</p>
+</div></section>
+
+<section class="step" data-step="shuffle"><div>
+  <p class="kicker">Capítulo 2 · ¿Y si fuera cualquier grupo?</p>
+  <h2>Etiquetas al azar</h2>
+  <p>El juego sólo junta palabras cuyas cifras se llevan entre 1.25 y 10 veces. Quizá así
+  cualquier grupo de palabras gana «casi siempre». Para probarlo, le di la etiqueta de
+  «nombre» a <b data-fact="n_names"></b> palabras al azar y volví a contar, <b data-fact="n_sh"></b>
+  veces. Cada punto gris es uno de esos sorteos.</p>
+  <p>El sorteo típico gana el <b data-fact="sh_med"></b>: una moneda al aire. El que más,
+  el <b data-fact="sh_max"></b>. <span class="w">Ninguno</span> llega a lo de los nombres de
+  verdad. Lo que gana es ser nombre, no la forma en que el juego arma los pares.</p>
+</div></section>
+
+<section class="step" data-step="words"><div>
+  <p class="kicker">Epílogo · Qué tocar</p>
+  <h2>María juega en todo el mundo</h2>
+  <p>Las cifras son de Pwned Passwords, de Have I Been Pwned: para cada contraseña,
+  <a href="https://haveibeenpwned.com/API/v3#PwnedPasswords">cuántas veces aparece</a> en
+  su colección de filtraciones de todo el mundo. Una explicación probable, que estos
+  datos no prueban: un nombre como <i>carlos</i> o <i>daniela</i> lo usa gente de muchos
+  países, y <i>chilango</i> o <i>rayados</i> casi sólo de aquí.</p>
+  <p>Así que en <a href="../">¿Cuál se filtró más?</a>, si uno de los dos es un nombre,
+  tócalo. Y si es el tuyo, cámbiala.</p>
+  <p class="small">Datos: conteos de Pwned Passwords consultados en noviembre de 2026 (los
+  mismos que usa el juego). Los pares son los de <code>dailyPairs</code> del juego para
+  cada día del 14 de noviembre de 2026 al 13 de noviembre de 2027, con la lista de palabras
+  de hoy. «Nombre» es la categoría «nombres» de la lista del juego. El sorteo de etiquetas
+  usa las mismas <b data-fact="n_play"></b> palabras y los mismos pares. El programa está
+  <a href="https://github.com/matmat202/cual-se-filtro/blob/main/story/build_story.py">en el repositorio</a>.</p>
+</div></section>
+
+</main>
+<script type="module" src="story.js"></script>
+</body>
+</html>
