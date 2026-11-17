@@ -47,6 +47,13 @@
     const right = picks.filter((w, k) => L.isRight(C, pairs[k], w)).length;
     $("game").hidden = true; $("done").hidden = false;
     $("score").textContent = `${right} de ${pairs.length}`;
+    let hist = null;
+    try { hist = JSON.parse(localStorage.getItem(KEY + "-dias")); } catch (e) {}
+    hist = L.record(hist, today, right);
+    try { localStorage.setItem(KEY + "-dias", JSON.stringify(hist)); } catch (e) {}
+    const st = L.streak(hist, today), dias = n => n === 1 ? "1 día" : `${n} días`;
+    $("streak").textContent = `🔥 Racha: ${st.current === 1 ? "1 día" : dias(st.current) + " seguidos"}` +
+      (st.best > st.current ? ` · tu mejor racha: ${dias(st.best)}` : "") + ` · ${dias(st.played)} jugados`;
     $("share-line").textContent = L.shareText(C, pairs, picks, today, URL).split("\n")[1] + " · Mañana hay otras diez.";
     $("review").replaceChildren(...L.review(C, pairs, picks).map(r => {
       const li = document.createElement("li");

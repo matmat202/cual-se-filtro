@@ -96,6 +96,30 @@
     });
   }
 
-  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText, review };
+  // Days played, kept on the phone as {"YYYY-MM-DD": right}. A finished day is recorded
+  // once (a reload rewrites the same score); junk in storage starts an empty history.
+  function record(hist, iso, right) {
+    const h = hist && typeof hist === "object" && !Array.isArray(hist) ? { ...hist } : {};
+    h[iso] = right;
+    return h;
+  }
+  // Calendar day before iso, in UTC so a DST night or month end never skips or repeats one.
+  function dayBefore(iso) {
+    const [y, m, d] = iso.split("-").map(Number);
+    return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10);
+  }
+  // current: days in a row ending today (or yesterday, if today is not played yet);
+  // best: the longest such run ever; played: days with a score.
+  function streak(hist, iso) {
+    const days = Object.keys(hist || {}).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d) && d <= iso).sort();
+    const has = new Set(days);
+    let current = 0, d = has.has(iso) ? iso : dayBefore(iso);
+    while (has.has(d)) { current++; d = dayBefore(d); }
+    let best = 0, run = 0, prev = null;
+    for (const x of days) { run = prev && dayBefore(x) === prev ? run + 1 : 1; best = Math.max(best, run); prev = x; }
+    return { current, best, played: days.length };
+  }
+
+  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText, review, record, dayBefore, streak };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);
