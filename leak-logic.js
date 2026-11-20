@@ -120,6 +120,16 @@
     return { current, best, played: days.length };
   }
 
-  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText, review, record, dayBefore, streak };
+  // Yesterday's ten for someone who missed it (or wants to argue about it): the same
+  // pairs everybody got the day before iso, more-leaked word first, nobody's taps.
+  function yesterday(counts, iso) {
+    const d = dayBefore(iso);
+    return { date: d, rows: dailyPairs(counts, d).map(p => {
+      const [hi, lo] = counts[p[0]] > counts[p[1]] ? p : [p[1], p[0]];
+      return { hi, lo, hiN: counts[hi], loN: counts[lo] };
+    }) };
+  }
+
+  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText, review, record, dayBefore, streak, yesterday };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);

@@ -45,6 +45,9 @@
   ol.review .picked b { text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:2px; }
   ol.review .c { display:block; font:400 .85rem system-ui, sans-serif; color:var(--mute); }
   ol.review .gt { color:var(--mute); }
+  ol.review.plain li { grid-template-columns:1fr auto 1fr; }
+  details.ayer { margin-top:28px; }
+  details.ayer summary { cursor:pointer; font-weight:600; font-size:1.05rem; padding:6px 0; }
   [hidden] { display:none !important; }
 </style>
 </head>
@@ -70,6 +73,12 @@
     <ol id="review" class="review"></ol>
     <p>Si alguna de estas es tu contraseña, cámbiala: quien roba cuentas prueba primero estas listas. Mejor una frase larga que sólo tú sepas (por ejemplo cuatro palabras al azar) y un gestor de contraseñas.</p>
   </div>
+
+  <details id="ayer" class="ayer" hidden>
+    <summary>Las diez de ayer, <span id="ayer-date"></span></summary>
+    <p class="small">Primero la que se filtró más. Por si no jugaste ayer, o para discutirlo en el chat.</p>
+    <ol id="ayer-list" class="review plain"></ol>
+  </details>
 
   <section class="box">
     <h2>¿Y la tuya?</h2>

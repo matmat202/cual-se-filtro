@@ -55,24 +55,39 @@
     $("streak").textContent = `🔥 Racha: ${st.current === 1 ? "1 día" : dias(st.current) + " seguidos"}` +
       (st.best > st.current ? ` · tu mejor racha: ${dias(st.best)}` : "") + ` · ${dias(st.played)} jugados`;
     $("share-line").textContent = L.shareText(C, pairs, picks, today, URL).split("\n")[1] + " · Mañana hay otras diez.";
-    $("review").replaceChildren(...L.review(C, pairs, picks).map(r => {
-      const li = document.createElement("li");
+    $("review").replaceChildren(...L.review(C, pairs, picks).map(row));
+  }
+
+  // One answer row: [mark] winner (count) > loser (count); the player's tap underlined.
+  function row(r) {
+    const li = document.createElement("li");
+    if (r.pick !== undefined) {
       li.className = r.ok ? "ok-row" : "bad-row";
       const mark = document.createElement("span");
       mark.className = "mark"; mark.textContent = r.ok ? "✅" : "❌";
       mark.setAttribute("aria-label", r.ok ? "acertaste" : "fallaste");
-      const cell = (w, n) => {
-        const d = document.createElement("span");
-        d.className = "w" + (w === r.pick ? " picked" : "");
-        const b = document.createElement("b"); b.textContent = w;
-        const c = document.createElement("span"); c.className = "c"; c.textContent = L.fmt(n);
-        d.append(b, c);
-        return d;
-      };
-      const gt = document.createElement("span"); gt.className = "gt"; gt.textContent = ">";
-      li.append(mark, cell(r.hi, r.hiN), gt, cell(r.lo, r.loN));
-      return li;
-    }));
+      li.append(mark);
+    }
+    const cell = (w, n) => {
+      const d = document.createElement("span");
+      d.className = "w" + (w === r.pick ? " picked" : "");
+      const b = document.createElement("b"); b.textContent = w;
+      const c = document.createElement("span"); c.className = "c"; c.textContent = L.fmt(n);
+      d.append(b, c);
+      return d;
+    };
+    const gt = document.createElement("span"); gt.className = "gt"; gt.textContent = ">";
+    li.append(cell(r.hi, r.hiN), gt, cell(r.lo, r.loN));
+    return li;
+  }
+
+  // Yesterday's answers, for whoever missed the day. The game began 2026-11-03.
+  const ayer = L.yesterday(C, today);
+  if (ayer.date >= "2026-11-03" && ayer.rows.length) {
+    const [y, m, d] = ayer.date.split("-").map(Number);
+    $("ayer-date").textContent = new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+    $("ayer-list").replaceChildren(...ayer.rows.map(row));
+    $("ayer").hidden = false;
   }
 
   $("next").onclick = () => (++i < pairs.length ? show() : finish());
