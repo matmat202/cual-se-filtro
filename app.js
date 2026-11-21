@@ -113,14 +113,15 @@
       const hex = [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, "0")).join("").toUpperCase();
       const r = await fetch("https://api.pwnedpasswords.com/range/" + hex.slice(0, 5), { headers: { "Add-Padding": "true" } });
       const n = L.countInRange(await r.text(), hex);
-      out.className = n ? "bad" : "ok";
-      out.textContent = n ? `Apareció ${L.fmt(n)} veces en filtraciones. Cámbiala donde la uses.`
-                          : "No aparece en ninguna filtración conocida. Eso no la hace segura, pero es buena señal.";
+      const v = L.verdict(C, n, pw);
+      out.className = v.cls; out.textContent = v.text;
     } catch (e) {
       out.className = ""; out.textContent = "No se pudo consultar ahora (¿sin internet?).";
     }
     $("mine").value = "";
   };
+  // The phone keyboard's "Ir"/Enter checks too.
+  $("mine").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); $("check").click(); } };
 
   if (i >= pairs.length) finish(); else show();
 })();

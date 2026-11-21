@@ -58,6 +58,28 @@
     return r >= 2 ? `${Math.round(r * 10) / 10} veces más` : `${Math.round((r - 1) * 100)}% más`;
   }
 
+  // What the "¿Y la tuya?" box says. n = breach count, pw = what was typed (never stored).
+  // A miss is only green when it is long and not one of the game's words with digits on it:
+  // "Mty86!" is in no breach yet and is still short, and "rayados1986" is the first thing
+  // anyone guessing tries.
+  const LONG = 12;
+  function poolBase(counts, pw) {
+    const core = pw.toLowerCase().replace(/^[\d\W_]+|[\d\W_]+$/g, "");
+    if (!core) return null;
+    if (core in counts) return core;
+    const plain = core.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return plain in counts ? plain : null;
+  }
+  function verdict(counts, n, pw) {
+    const len = [...pw].length, base = poolBase(counts, pw);
+    const words = " Mejor: cuatro o más palabras al azar que no formen una frase conocida, y una distinta para cada cuenta.";
+    const pool = base ? ` Es «${base}»${pw.toLowerCase() === base ? "" : " con algo pegado"}, una de las del juego: nombres, equipos y años son lo primero que prueba quien adivina contraseñas.` : "";
+    if (n) return { cls: "bad", text: `Apareció ${fmt(n)} veces en filtraciones. Cámbiala donde la uses.${pool}${words}` };
+    if (base) return { cls: "warn", text: `No aparece en filtraciones conocidas, pero tampoco es difícil de adivinar.${pool}${words}` };
+    if (len < LONG) return { cls: "warn", text: `No aparece en filtraciones conocidas, pero es corta (${len} caracteres): una computadora prueba todas las de ese largo muy rápido.${words}` };
+    return { cls: "ok", text: "No aparece en ninguna filtración conocida y es larga. Eso no la hace segura, pero es buena señal." };
+  }
+
   // HIBP range body "SUFFIX:COUNT\r\n..." -> count for this full SHA-1 (hex, upper).
   function countInRange(body, sha1) {
     const suf = sha1.slice(5).toUpperCase();
@@ -130,6 +152,6 @@
     }) };
   }
 
-  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, rng, restore, shareText, review, record, dayBefore, streak, yesterday };
+  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, verdict, rng, restore, shareText, review, record, dayBefore, streak, yesterday };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);
