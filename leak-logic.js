@@ -142,6 +142,15 @@
     return { current, best, played: days.length };
   }
 
+  // The line under the score. A first day has no run to report ("Racha: 1 día · 1 día
+  // jugados" was every new player's first result): it says what tomorrow would make.
+  function streakText(st) {
+    const dias = n => n === 1 ? "1 día" : `${n} días`;
+    if (st.played <= 1) return "🔥 Tu primer día. Juega mañana y llevas 2 días seguidos.";
+    return `🔥 Racha: ${st.current === 1 ? "1 día" : dias(st.current) + " seguidos"}` +
+      (st.best > st.current ? ` · tu mejor racha: ${dias(st.best)}` : "") + ` · ${dias(st.played)} jugados`;
+  }
+
   // Yesterday's ten for someone who missed it (or wants to argue about it): the same
   // pairs everybody got the day before iso, more-leaked word first, nobody's taps.
   function yesterday(counts, iso) {
@@ -152,6 +161,6 @@
     }) };
   }
 
-  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, verdict, rng, restore, shareText, review, record, dayBefore, streak, yesterday };
+  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, verdict, rng, restore, shareText, review, record, dayBefore, streak, streakText, yesterday };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);
