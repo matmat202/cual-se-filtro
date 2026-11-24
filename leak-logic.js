@@ -151,6 +151,16 @@
       (st.best > st.current ? ` · tu mejor racha: ${dias(st.best)}` : "") + ` · ${dias(st.played)} jugados`;
   }
 
+  // The game's date: Mexico City's calendar day, wherever the phone is. Keyed on the
+  // phone's own zone, a player in California stayed on yesterday's ten for the two hours
+  // after midnight at home, and shared a dated result nobody in the family had.
+  const ZONE = "America/Mexico_City";
+  function gameDay(now) {
+    const p = {};
+    for (const x of new Intl.DateTimeFormat("en-US", { timeZone: ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now)) p[x.type] = x.value;
+    return `${p.year}-${p.month}-${p.day}`;
+  }
+
   // Yesterday's ten for someone who missed it (or wants to argue about it): the same
   // pairs everybody got the day before iso, more-leaked word first, nobody's taps.
   function yesterday(counts, iso) {
@@ -161,6 +171,6 @@
     }) };
   }
 
-  const api = { GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, verdict, rng, restore, shareText, review, record, dayBefore, streak, streakText, yesterday };
+  const api = { ZONE, gameDay, GENERIC, since, playable, dailyPairs, isRight, fmt, ratioText, countInRange, verdict, rng, restore, shareText, review, record, dayBefore, streak, streakText, yesterday };
   if (typeof module !== "undefined") module.exports = api; else root.Leak = api;
 })(this);

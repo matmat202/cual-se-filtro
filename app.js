@@ -1,6 +1,6 @@
 (function () {
   const C = window.COUNTS, L = window.Leak;
-  const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, local
+  const today = L.gameDay(new Date()); // YYYY-MM-DD in Mexico City, the same for the whole family
   const pairs = L.dailyPairs(C, today);
   const KEY = "cual-se-filtro", URL = "https://matmat202.github.io/cual-se-filtro/";
   const $ = id => document.getElementById(id);
